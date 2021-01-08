@@ -60,6 +60,7 @@ func (matrix Matrix) Transpose() Matrix {
 	return bodyOfMatrix
 }
 
+//Determinant calculates determinant of matrix
 func (matrix Matrix) Determinant() (float64, error) {
 	var res float64
 	rows, colums := matrix.MatrixSize()
@@ -95,6 +96,7 @@ func (matrix Matrix) Determinant() (float64, error) {
 	return res, nil
 }
 
+//Minor calculates minor of matrix
 func Minor(matrix Matrix) float64 {
 	var res float64
 	rows, colums := matrix.MatrixSize()
@@ -129,7 +131,7 @@ func Minor(matrix Matrix) float64 {
 	return res
 }
 
-//AlgebraicComplement calculating algebraic complement and write its in channel
+//AlgebraicComplement calculating algebraic complement and writes in channel
 func AlgebraicComplement(row, column int, element float64, minor [][]float64, ch chan float64) {
 	ch <- math.Pow(-1, float64((row)+(column))) * element * Minor(minor)
 }
