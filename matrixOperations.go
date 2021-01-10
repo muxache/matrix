@@ -62,38 +62,11 @@ func (matrix Matrix) Transpose() Matrix {
 
 //Determinant calculates determinant of matrix
 func (matrix Matrix) Determinant() (float64, error) {
-	var res float64
 	rows, colums := matrix.MatrixSize()
 	if rows != colums || matrix == nil {
 		return 0, errors.New("Matrix isn't square")
 	}
-	if rows == 2 {
-		return matrix[0][0]*matrix[1][1] + matrix[0][1]*matrix[1][0], nil
-	}
-	var newMatrix [][]float64
-	newMatrix = make([][]float64, rows-1)
-	var exI int = 0
-	for exJ := 0; exJ < len(matrix); exJ++ {
-		for i := range matrix {
-			if i != exI {
-				newRow := make([]float64, rows-1)
-				for j := range matrix[i] {
-					if j != exJ {
-						jt := j
-						if j > exJ {
-							jt--
-						}
-						newRow[jt] = matrix[i][j]
-					}
-				}
-				newMatrix[i-1] = newRow
-			}
-		}
-		ch := make(chan float64)
-		go AlgebraicComplement(exI+1, exJ+1, matrix[exI][exJ], newMatrix, ch)
-		res += <-ch
-	}
-	return res, nil
+	return Minor(matrix), nil
 }
 
 //Minor calculates minor of matrix
@@ -125,8 +98,10 @@ func Minor(matrix Matrix) float64 {
 				newMatrix[i-1] = newRow
 			}
 		}
-		res += math.Pow(-1, float64((exI+1)+(exJ+1))) * matrix[exI][exJ] * Minor(newMatrix)
-
+		//res += math.Pow(-1, float64((exI+1)+(exJ+1))) * matrix[exI][exJ] * Minor(newMatrix)
+		ch := make(chan float64)
+		go AlgebraicComplement(exI+1, exJ+1, matrix[exI][exJ], newMatrix, ch)
+		res += <-ch
 	}
 	return res
 }
